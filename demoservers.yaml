@@ -23,6 +23,7 @@ Resources:
         FromPort: 80
         ToPort: 80
         CidrIp: 0.0.0.0/0
+        
   WebServerSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -32,8 +33,8 @@ Resources:
           !Sub "${EnvironmentName}-VPCID"
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: 8080
-        ToPort: 8080
+        FromPort: 80
+        ToPort: 80
         CidrIp: 0.0.0.0/0
       - IpProtocol: tcp
         FromPort: 22
@@ -42,7 +43,7 @@ Resources:
       SecurityGroupEgress:
       - IpProtocol: tcp
         FromPort: 0
-        ToPort: 65535 # From port 0 to 65535 enabled to access internet un-restricted
+        ToPort: 65535
         CidrIp: 0.0.0.0/0
   WebAppLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
@@ -53,10 +54,12 @@ Resources:
           sudo apt-get update -y
           sudo apt-get install apache2 -y
           sudo systemctl start apache2.service          
+          cd /var/www/html
+          echo "It works! Udagram, Udacity" > index.html          
       # ToDo: AMI ID of Ubuntu Linux machine. Too get one, try creating a VM from the web console. 
-      ImageId: ami-0747bdcabd34c712a
+      ImageId: ami-0688ba7eeeeefe3cd
       # ToDo: Change the key-pair name, as applicable to you. 
-      KeyName: key
+      KeyName: key11
       SecurityGroups:
       - Ref: WebServerSecGroup
       InstanceType: t3.medium
@@ -64,7 +67,7 @@ Resources:
       - DeviceName: "/dev/sdk"
         Ebs:
           VolumeSize: '10'
-  
+
   WebAppGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -110,12 +113,12 @@ Resources:
   WebAppTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckIntervalSeconds: 10
+      HealthCheckIntervalSeconds: 70
       HealthCheckPath: /
       HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 8
+      HealthCheckTimeoutSeconds: 60
       HealthyThresholdCount: 2
-      Port: 8080
+      Port: 80
       Protocol: HTTP
       UnhealthyThresholdCount: 5
       VpcId: 
