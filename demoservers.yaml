@@ -1,5 +1,5 @@
 Description: >
-    Carlos Rivas / Udacity 2019
+    Abdelrahman Magdy Cloud Formation Project
 Parameters:
 
     EnvironmentName:
@@ -59,7 +59,7 @@ Resources:
       # ToDo: AMI ID of Ubuntu Linux machine. Too get one, try creating a VM from the web console. 
       ImageId: ami-0688ba7eeeeefe3cd
       # ToDo: Change the key-pair name, as applicable to you. 
-      KeyName: key11
+    
       SecurityGroups:
       - Ref: WebServerSecGroup
       InstanceType: t3.medium
@@ -124,3 +124,8 @@ Resources:
       VpcId: 
         Fn::ImportValue:
           Fn::Sub: "${EnvironmentName}-VPCID"
+
+Outputs: 
+    webAppLbDns: 
+        Description: The DNS for the WebApp Load Balancer 
+        Value: !Sub "http://${WebAppLB.DNSName}"
